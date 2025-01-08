@@ -1,0 +1,7 @@
+环境需要创建KV存储空间
+空间名称：随意
+变量名称：CSV_STORAGE
+
+为Worker 定义环境变量
+变量名称：PASSWORD_ENV
+值：随意
