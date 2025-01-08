@@ -50,7 +50,7 @@ async function handleFileUpload(request) {
     const responseContent = `
         <h2>CSV 文件上传成功！</h2>
         <p>点击以下链接查看上传的 CSV 文件：</p>
-        <a href="/csv/${id}">查看上传的 CSV 内容</a>
+        <a href="/csv/${id}.csv">查看上传的 CSV 内容</a>
     `;
     return new Response(responseContent, {
         headers: {
@@ -159,7 +159,8 @@ async function handleCsvContent(url) {
         return new Response("无效的 URL", { status: 400 });
     }
 
-    const id = pathSegments[2];
+    const idWithExtension = pathSegments[2];
+    const id = idWithExtension.replace(".csv", ""); // 去除 `.csv` 后缀
 
     // 从 KV 存储中获取保存的 CSV 内容
     const csvContent = await CSV_STORAGE.get(id, "text");
