@@ -16,7 +16,7 @@
 3. 上传后会生成一个链接，最多可生成5个连接，点击可以查看上传的 CSV 文件内容。
 
 ### 部署到 Cloudflare Worker
-1. 创建 Cloudflare Worker](https://workers.cloudflare.com/) 账户并登录。
+1. [创建 Cloudflare Worker](https://workers.cloudflare.com/) 账户并登录。
 2. 创建新的 Worker 项目，将 `_worker.js` 文件内容粘贴到 Worker 编辑器中。
 3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码。
 4. 使用 `KV` 存储来保存上传的 CSV 文件内容，新建变量名称（`CSV_STORAGE`）来绑定。
