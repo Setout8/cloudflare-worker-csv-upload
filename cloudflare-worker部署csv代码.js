@@ -1,7 +1,8 @@
 addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 });
-
+//SO启程YouTube：https://www.youtube.com/@set-out
+//SO启程博客：https://set-out8.blogspot.com
 async function handleRequest(request) {
   // CSV 数据
   const csvData = `
