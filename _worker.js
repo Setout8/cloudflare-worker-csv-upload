@@ -1,4 +1,5 @@
 const PASSWORD = PASSWORD_ENV; // 从环境变量中获取密码
+const PATH_PREFIX = PATH_PREFIX_ENV || "/csv/"; // 从环境变量中获取路径前缀，默认为 "/csv/"
 
 addEventListener("fetch", event => {
     event.respondWith(handleRequest(event.request));
@@ -12,7 +13,7 @@ async function handleRequest(request) {
 
     // 如果是访问子链接，显示 CSV 文件内容
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/csv/")) {
+    if (url.pathname.startsWith(PATH_PREFIX)) {
         return await handleCsvContent(url);
     }
 
@@ -50,7 +51,7 @@ async function handleFileUpload(request) {
     const responseContent = `
         <h2>CSV 文件上传成功！</h2>
         <p>点击以下链接查看上传的 CSV 文件：</p>
-        <a href="/csv/${id}.csv">查看上传的 CSV 内容</a>
+        <a href="${PATH_PREFIX}${id}.csv">查看上传的 CSV 内容</a>
     `;
     return new Response(responseContent, {
         headers: {
@@ -152,9 +153,12 @@ async function getHtmlPage() {
 
 // 处理获取子链接内容
 async function handleCsvContent(url) {
-    // 从 URL 中提取固定的 ID
-    const pathSegments = url.pathname.split("/");
+    // 验证路径前缀是否与环境变量匹配
+    if (!url.pathname.startsWith(PATH_PREFIX)) {
+        return new Response("路径前缀无效", { status: 403 });
+    }
 
+    const pathSegments = url.pathname.split("/");
     if (pathSegments.length < 3) {
         return new Response("无效的 URL", { status: 400 });
     }
