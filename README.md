@@ -20,8 +20,8 @@
 ### 部署到 Cloudflare Worker
 1. [创建 Cloudflare Worker](https://workers.cloudflare.com/) 账户并登录。
 2. 创建新的 Worker 项目，保持里面默认的代码。如没有默认代码，临时使用 `Hello World!.js` 。
-3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码，值：随意，如：password。
-4. 在 Cloudflare Worker 控制面板中配置环境变量（`PATH_PREFIX_ENV`）为你的部分自定义路径，值：/随意/，如：/abc/。
+3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码，值：随意 (建议字母数字组合)，如：password。
+4. 在 Cloudflare Worker 控制面板中配置环境变量（`PATH_PREFIX_ENV`）为你的部分自定义路径，值：/随意/ (建议字母数字组合)，如：/abc/。
 5. 使用 `KV` 存储来保存上传的 CSV 文件内容，新建变量名称（`CSV_STORAGE`）来绑定。
 6. 再打开刚创建的项目，将 `_worker.js` 文件内容粘贴到 Worker 编辑器中，保存并部署，访问 URL 即可。
 
