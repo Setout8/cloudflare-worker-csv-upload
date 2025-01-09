@@ -17,7 +17,7 @@
 3. 上传后会生成一个链接，最多可生成5个连接，点击可以查看上传的 CSV 文件内容。
 4. 引用请注明出处：SO启程Github（https://github.com/Setout8/cloudflare-worker-csv-upload）
 
-### 部署到 Cloudflare Worker
+### 部署到 Cloudflare Worker [部署操作视频](https://youtu.be/JBGavkjzaQE))
 1. [创建 Cloudflare Worker](https://workers.cloudflare.com/) 账户并登录。
 2. 创建新的 Worker 项目，保持里面默认的代码。如没有默认代码，临时使用 `Hello World!.js` 。
 3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码，值：随意 (建议字母数字组合)，如：pass1234。
