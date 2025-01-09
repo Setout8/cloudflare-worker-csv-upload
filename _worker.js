@@ -1,5 +1,5 @@
-const PASSWORD = PASSWORD_ENV; // 从环境变量中获取密码
-const PATH_PREFIX = PATH_PREFIX_ENV || "/csv/"; // 从环境变量中获取路径前缀，默认为 "/csv/"
+const PASSWORD = PASSWORD_ENV || "pass1234"; // 从环境变量中获取密码,默认为"pass1234"
+const PATH_PREFIX = PATH_PREFIX_ENV || "/abc123/"; // 从环境变量中获取路径前缀，默认为 "/abc123/"
 
 addEventListener("fetch", event => {
     event.respondWith(handleRequest(event.request));
