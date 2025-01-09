@@ -1,7 +1,14 @@
+特别注意：在部署“_worker.js”代码前，在一定要先设下面两个环境变量，一个KV存储空间。
+
+为Worker 定义环境变量【上传密码】
+变量名称：PASSWORD_ENV
+值：随意 (建议字母数字组合)
+
+为Worker 定义环境变量【部分 url 路径，如：/abc/】
+变量名称：PATH_PREFIX_ENV
+值：/随意/ (建议字母数字组合)
+
+
 环境需要创建KV存储空间
 空间名称：随意
 变量名称：CSV_STORAGE
-
-为Worker 定义环境变量
-变量名称：PASSWORD_ENV
-值：随意
