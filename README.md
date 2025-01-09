@@ -4,7 +4,8 @@
 ## 功能
 - **上传 CSV 文件**：用户可以通过网页表单上传 CSV 文件。
 - **密码保护**：上传时需要输入密码，防止未授权上传。
-- **查看 CSV 文件内容**：上传后生成链接，用户可以查看 CSV 文件内容，也可以方便其他程序在链接上抓取 csv 文件 API。
+- **查看 CSV 文件内容**：上传后生成链接，用户可以查看 CSV 文件内容，也可以方便其他程序在链接上抓取 csv 文件 API
+- **自定义部分url路径**：防止被别人盗用 URL 的内容。
 
 ## 项目结构
 - `worker.js`：主程序代码，处理文件上传、CSV 存储、显示文件内容、被其他程序 API 抓取等逻辑。
@@ -18,9 +19,11 @@
 
 ### 部署到 Cloudflare Worker
 1. [创建 Cloudflare Worker](https://workers.cloudflare.com/) 账户并登录。
-2. 创建新的 Worker 项目，将 `_worker.js` 文件内容粘贴到 Worker 编辑器中。
-3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码。
-4. 使用 `KV` 存储来保存上传的 CSV 文件内容，新建变量名称（`CSV_STORAGE`）来绑定。
+2. 创建新的 Worker 项目，保持里面默认的代码。如没有默认代码，临时使用 `Hello World!.js` 。
+3. 在 Cloudflare Worker 控制面板中配置环境变量（`PASSWORD_ENV`）为你的密码，值：随意，如：password。
+4. 在 Cloudflare Worker 控制面板中配置环境变量（`PATH_PREFIX_ENV`）为你的部分自定义路径，值：/随意/，如：/abc/。
+5. 使用 `KV` 存储来保存上传的 CSV 文件内容，新建变量名称（`CSV_STORAGE`）来绑定。
+6. 再打开刚创建的项目，将 `_worker.js` 文件内容粘贴到 Worker 编辑器中，保存并部署，访问 URL 即可。
 
 ### 运行本地开发环境
 1. 克隆项目到本地：
