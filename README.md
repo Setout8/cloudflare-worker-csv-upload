@@ -2,7 +2,7 @@
 这是一个基于 Cloudflare Worker 实现的项目，用于上传和查看 CSV 文件。用户可以最多上传5个 CSV 文件并通过生成的5个固定的 URL 来查看内容。还可以在线编辑一个文本，保存后生成1个固定的 URL 来杳看内容。上传的文件会保存在 Cloudflare KV 存储中，直到下次上传新文件。
 
 # 部署完后访问的界面
-![image](https://github.com/user-attachments/assets/3c6f7887-0d51-46df-aebd-67d53e60d7c2)
+![image](https://github.com/user-attachments/assets/6dd24125-2362-4c8a-a71a-be119d48074d)
 
 ## 功能
 - **上传 CSV 文件**：用户可以通过网页表单上传 CSV 文件。
