@@ -1,4 +1,4 @@
-const PASSWORD = PASSWORD_ENV || "pass1234"; // 从环境变量中获取密码,默认为"pass1234"
+const PASSWORD = PASSWORD_ENV || "pass1234"; // 从环境变量中获取密码，默认为"pass1234"
 const PATH_PREFIX = PATH_PREFIX_ENV || "/abc123/"; // 从环境变量中获取路径前缀，默认为 "/abc123/"
 
 addEventListener("fetch", event => {
@@ -6,18 +6,15 @@ addEventListener("fetch", event => {
 });
 
 async function handleRequest(request) {
-    // 如果是 POST 请求，处理文件上传
     if (request.method === "POST") {
-        return await handleFileUpload(request);
+        return await handleFileOrTextUpload(request);
     }
 
-    // 如果是访问子链接，显示 CSV 文件内容
     const url = new URL(request.url);
     if (url.pathname.startsWith(PATH_PREFIX)) {
-        return await handleCsvContent(url);
+        return await handleContentDisplay(url);
     }
 
-    // 默认返回 HTML 页面，包括上传表单
     const htmlContent = await getHtmlPage();
     return new Response(htmlContent, {
         headers: {
@@ -26,32 +23,38 @@ async function handleRequest(request) {
     });
 }
 
-// 处理上传的 CSV 文件
-async function handleFileUpload(request) {
+// 处理文件或文本内容的上传
+async function handleFileOrTextUpload(request) {
     const formData = await request.formData();
-    const file = formData.get("file");
-    const id = formData.get("id");
     const password = formData.get("password");
 
-    // 验证密码
     if (password !== PASSWORD) {
         return new Response("密码错误", { status: 403 });
     }
 
-    if (!file || !id) {
-        return new Response("没有上传文件或没有指定 ID", { status: 400 });
+    const id = formData.get("id");
+    if (!id) {
+        return new Response("没有指定 ID", { status: 400 });
     }
 
-    const text = await file.text();
+    const file = formData.get("file");
+    const text = formData.get("text");
+    let content = "";
 
-    // 将上传的 CSV 内容保存到 KV 存储，使用固定的 ID
-    await CSV_STORAGE.put(id, text);
+    if (file) {
+        content = await file.text();
+    } else if (text) {
+        content = text;
+    } else {
+        return new Response("没有上传文件或输入文本内容", { status: 400 });
+    }
 
-    // 返回上传成功后的页面内容，并包含指向子链接的 URL
+    await CSV_STORAGE.put(id, content);
+
     const responseContent = `
-        <h2>CSV 文件上传成功！</h2>
-        <p>点击以下链接查看上传的 CSV 文件：</p>
-        <a href="${PATH_PREFIX}${id}.csv">查看上传的 CSV 内容</a>
+        <h2>${file ? "CSV 文件" : "文本内容"}上传成功！</h2>
+        <p>点击以下链接查看内容：</p>
+        <a href="${PATH_PREFIX}${id}${file ? ".csv" : ".txt"}">查看上传的 ${file ? "CSV 文件" : "文本内容"}</a>
     `;
     return new Response(responseContent, {
         headers: {
@@ -68,18 +71,12 @@ async function getHtmlPage() {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV 文件上传</title>
-    <style>
-        pre {
-            white-space: pre-wrap; /* 让文本自动换行 */
-            word-wrap: break-word; /* 长单词或URL自动换行 */
-        }
-    </style>
+    <title>文件和文本上传</title>
 </head>
 <body>
-    <h1>上传 CSV 文件</h1>
+    <h1>上传 CSV 文件或文本内容</h1>
 
-    <!-- 上传按钮表单，包含 5 个上传按钮 -->
+    <!-- 文件上传表单 -->
     <form id="upload-form" enctype="multipart/form-data">
         <label>密码：</label>
         <input type="password" id="password" name="password" required />
@@ -108,6 +105,11 @@ async function getHtmlPage() {
         <label>上传文件 5：</label>
         <input type="file" name="file" accept=".csv" />
         <button type="submit" data-id="csv-content-5">上传 CSV 5</button>
+        <br>
+
+        <h2>输入文本内容</h2>
+        <textarea id="text-content" rows="5" cols="50" placeholder="输入文本内容..."></textarea>
+        <button type="submit" data-id="text-content">上传文本内容</button>
     </form>
 
     <h2>引用请注明出处</h2>
@@ -120,14 +122,27 @@ async function getHtmlPage() {
 
     <script>
         document.querySelectorAll("button").forEach(button => {
-            button.addEventListener("click", async (event) => {
-                event.preventDefault(); // 防止表单默认提交行为
+            button.addEventListener("click", async event => {
+                event.preventDefault();
 
                 const formData = new FormData();
                 const fileInput = button.previousElementSibling;
                 const passwordInput = document.getElementById("password");
+                const textContent = document.getElementById("text-content");
 
-                formData.append("file", fileInput.files[0]);
+                if (button.getAttribute("data-id") === "text-content") {
+                    if (!textContent.value.trim()) {
+                        alert("请输入文本内容！");
+                        return;
+                    }
+                    formData.append("text", textContent.value);
+                } else if (fileInput && fileInput.files.length > 0) {
+                    formData.append("file", fileInput.files[0]);
+                } else {
+                    alert("请选择文件或输入文本内容！");
+                    return;
+                }
+
                 formData.append("id", button.getAttribute("data-id"));
                 formData.append("password", passwordInput.value);
 
@@ -138,10 +153,9 @@ async function getHtmlPage() {
 
                 if (response.ok) {
                     const htmlContent = await response.text();
-                    // 显示上传成功后的链接
                     document.body.innerHTML = htmlContent;
                 } else {
-                    alert("文件上传失败！" + (response.status === 403 ? " 密码错误。" : ""));
+                    alert("上传失败：" + (response.status === 403 ? "密码错误。" : ""));
                 }
             });
         });
@@ -151,9 +165,8 @@ async function getHtmlPage() {
     `;
 }
 
-// 处理获取子链接内容
-async function handleCsvContent(url) {
-    // 验证路径前缀是否与环境变量匹配
+// 处理显示内容
+async function handleContentDisplay(url) {
     if (!url.pathname.startsWith(PATH_PREFIX)) {
         return new Response("路径前缀无效", { status: 403 });
     }
@@ -164,19 +177,13 @@ async function handleCsvContent(url) {
     }
 
     const idWithExtension = pathSegments[2];
-    const id = idWithExtension.replace(".csv", ""); // 去除 `.csv` 后缀
+    const id = idWithExtension.replace(/\.(csv|txt)$/, "");
 
-    // 从 KV 存储中获取保存的 CSV 内容
-    const csvContent = await CSV_STORAGE.get(id, "text");
-
-    if (!csvContent) {
-        return new Response("找不到对应的 CSV 文件", { status: 404 });
+    const content = await CSV_STORAGE.get(id, "text");
+    if (!content) {
+        return new Response("找不到对应的内容", { status: 404 });
     }
 
-    // 只返回保存的 CSV 内容，不显示其他内容
-    return new Response(csvContent, {
-        headers: {
-            "Content-Type": "text/plain;charset=UTF-8"
-        }
-    });
+    const contentType = idWithExtension.endsWith(".csv") ? "text/plain;charset=UTF-8" : "text/plain;charset=UTF-8";
+    return new Response(content, { headers: { "Content-Type": contentType } });
 }
