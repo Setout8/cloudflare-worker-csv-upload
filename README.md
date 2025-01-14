@@ -29,9 +29,3 @@
 4. 在 Cloudflare Worker 控制面板中配置环境变量（`PATH_PREFIX_ENV`）为你的部分自定义路径，值：/随意/ (建议字母数字组合)，如：/abc123/。
 5. 使用 `KV` 存储来保存上传的 CSV 文件内容，新建变量名称（`CSV_STORAGE`）来绑定。
 6. 再打开刚创建的项目，将 `_worker.js` 文件内容粘贴到 Worker 编辑器中，保存并部署，访问 URL 即可。
-
-### 运行本地开发环境
-1. 克隆项目到本地：
-   ```bash
-   git clone https://github.com/yourusername/csv-upload-cloudflare-worker.git
-   cd csv-upload-cloudflare-worker
